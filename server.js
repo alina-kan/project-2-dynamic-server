@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 /*
 // Example GET request handler for data about a specific year
 app.get('/year/:selected_year', (req, res) => {
-    console.log(req.params.selected_year);
+    console.log(req.params.selected_year); 
     fs.readFile(path.join(template_dir, 'year.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
