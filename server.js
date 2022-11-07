@@ -30,7 +30,7 @@ app.use(express.static(public_dir));
 
 // GET request handler for home page '/' (redirect to desired route)
 app.get('/', (req, res) => {
-    let home = ''; // <-- change this
+    let home = '/index.html'; // <-- change this
     res.redirect(home);
 });
 
@@ -53,7 +53,7 @@ app.get('/location.html/:cid', (req, res) => {
         // modify `template` and send response
         // this will require a query to the SQL database
         let query = 'SELECT Country.country_code AS cid, Country.country_name, Company.company_name, Location.longitude, \
-         Location.latitude FROM Country INNER JOIN Company INNER JOIN Location WHERE Country.country_code = ?';
+         Location.latitude FROM Country INNER JOIN Company ON INNER JOIN Location WHERE Country.country_code = ?';
         let cid = req.params.cid.toUpperCase();
         db.all(query, [cid], (err, rows) => {
             //console.log(err);
@@ -72,7 +72,7 @@ app.get('/location.html/:cid', (req, res) => {
                 let location_table = '';
                 let i;
                 for(i=0; i < rows.length; i++){
-                    location_table = location_table + '<tr><td>' + rows[i].name + '</td>';
+                    location_table = location_table + '<tr><td>' + rows[i].name + '</td></tr>';
                     //cereal_table = cereal_table + '<td>' + rows[i].calories + '</td>';
                     //cereal_table = cereal_table + '<td>' + rows[i].carbohydrates + '</td>';
                     //cereal_table = cereal_table + '<td>' + rows[i].protein + '</td>';
