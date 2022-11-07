@@ -52,10 +52,10 @@ app.get('/location.html/:cid', (req, res) => {
     fs.readFile(path.join(template_dir, 'location.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
-        let query = 'SELECT Country.country_code AS cid, Country.country_name, Company.company_name, Location.longitude, \
-         Location.latitude FROM Country INNER JOIN Company ON INNER JOIN Location WHERE Country.country_code = ?';
+        let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Data.plant_name, Plant_Data.latitude\
+         Plant_Data.longitude FROM Country INNER JOIN Plant_Data WHERE Country.abbrv = ?';
         let cid = req.params.cid.toUpperCase();
-        db.all(query, [cid], (err, rows) => {
+        db.all(query, req.params.cid.toUpperCase(), (err, rows) => {
             //console.log(err);
             //console.log(rows);
             if (err) {
@@ -65,14 +65,14 @@ app.get('/location.html/:cid', (req, res) => {
             }
             else {
                 let response = template.toString();
-                response = response.replace('%%COMPANY%%', rows[2].cid);
+                response = response.replace('%%COMPANY%%', rows[0].cid);
                 //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
                 //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
 
                 let location_table = '';
                 let i;
                 for(i=0; i < rows.length; i++){
-                    location_table = location_table + '<tr><td>' + rows[i].name + '</td></tr>';
+                    location_table = location_table + '<tr><td>' + rows[i].abbrv + '</td></tr>';
                     //cereal_table = cereal_table + '<td>' + rows[i].calories + '</td>';
                     //cereal_table = cereal_table + '<td>' + rows[i].carbohydrates + '</td>';
                     //cereal_table = cereal_table + '<td>' + rows[i].protein + '</td>';
