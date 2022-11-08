@@ -29,10 +29,11 @@ app.use(express.static(public_dir));
 
 
 // GET request handler for home page '/' (redirect to desired route)
+/*
 app.get('/', (req, res) => {
-    let home = '/index.html'; // <-- change this
+    let home = 'index.html'; // <-- change this
     res.redirect(home);
-});
+}); */
 
 /*
 // Example GET request handler for data about a specific year
@@ -47,13 +48,13 @@ app.get('/year/:selected_year', (req, res) => {
 });
 */
 
-app.get('/location.html/:cid', (req, res) => {
+app.get('templates/location.html/:cid', (req, res) => {
     console.log(req.params.cid);
     fs.readFile(path.join(template_dir, 'location.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
         let query = 'SELECT Country.country_code AS cid, Country.country_name, Company.company_name, Location.longitude, \
-         Location.latitude FROM Country INNER JOIN Company ON INNER JOIN Location WHERE Country.country_code = ?';
+        Location.latitude FROM Country INNER JOIN Company ON INNER JOIN Location WHERE Country.country_code = ?';
         let cid = req.params.cid.toUpperCase();
         db.all(query, [cid], (err, rows) => {
             //console.log(err);
