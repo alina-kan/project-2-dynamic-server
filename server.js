@@ -12,7 +12,7 @@ let template_dir = path.join(__dirname, 'templates');
 let db_filename = path.join(__dirname, 'db', 'powerplant.sqlite3'); // <-- change this
 
 let app = express();
-let port = 5000;
+let port = 9000;
 
 // Open SQLite3 database (in read-only mode)
 let db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
