@@ -12,7 +12,7 @@ let template_dir = path.join(__dirname, 'templates');
 let db_filename = path.join(__dirname, 'db', 'powerplant.sqlite3'); // <-- change this
 
 let app = express();
-let port = 5000;
+let port = 9000;
 
 // Open SQLite3 database (in read-only mode)
 let db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
@@ -29,10 +29,11 @@ app.use(express.static(public_dir));
 
 
 // GET request handler for home page '/' (redirect to desired route)
+/*
 app.get('/', (req, res) => {
-    let home = '/index.html'; // <-- change this
+    let home = 'index.html'; // <-- change this
     res.redirect(home);
-});
+}); */
 
 /*
 // Example GET request handler for data about a specific year
@@ -47,7 +48,7 @@ app.get('/year/:selected_year', (req, res) => {
 });
 */
 
-app.get('/location.html/:cid', (req, res) => {
+app.get('templates/location.html/:cid', (req, res) => {
     console.log(req.params.cid);
     fs.readFile(path.join(template_dir, 'location.html'), (err, template) => {
         // modify `template` and send response
