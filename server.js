@@ -52,12 +52,12 @@ app.get('/location.html/:cid', (req, res) => {
     fs.readFile(path.join(template_dir, 'location.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
-        let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Data.plant_name, Plant_Data.latitude\
-         Plant_Data.longitude FROM Country INNER JOIN Plant_Data WHERE Country.abbrv = ?';
+        let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Info.name, Plant_Info.latitude, \
+         Plant_Info.longitude FROM Country INNER JOIN Plant_Info ON Country.abbrv = Plant_Info.country WHERE Country.abbrv = ?';
         let cid = req.params.cid.toUpperCase();
-        db.all(query, req.params.cid.toUpperCase(), (err, rows) => {
-            //console.log(err);
-            //console.log(rows);
+        db.all(query, [cid], (err, rows) => {
+            console.log(err);
+            console.log(rows);
             if (err) {
                 res.writeHead(404, {'Content-Type': 'text/plain'});
                 res.write('Error, file not found');
@@ -72,13 +72,89 @@ app.get('/location.html/:cid', (req, res) => {
                 let location_table = '';
                 let i;
                 for(i=0; i < rows.length; i++){
-                    location_table = location_table + '<tr><td>' + rows[i].abbrv + '</td></tr>';
-                    //cereal_table = cereal_table + '<td>' + rows[i].calories + '</td>';
-                    //cereal_table = cereal_table + '<td>' + rows[i].carbohydrates + '</td>';
-                    //cereal_table = cereal_table + '<td>' + rows[i].protein + '</td>';
-                    //cereal_table = cereal_table + '</tr>';
+                    location_table = location_table + '<tr><td>' + rows[i].cid + '</td>';
+                    location_table = location_table + '<td>' + rows[i].country_name + '</td>';
+                    location_table = location_table + '<td>' + rows[i].name + '</td>';
+                    location_table = location_table + '<td>' + rows[i].latitude + '</td>';
+                    location_table = location_table + '<td>' + rows[i].longitude + '</td></tr>';
                 }
                 response = response.replace('%%PLANT_INFO%%', location_table);
+                res.status(200).type('html').send(response);
+            }
+        })
+
+    });
+});
+
+app.get('/energy_source.html/:cid', (req, res) => {
+    console.log(req.params.cid);
+    fs.readFile(path.join(template_dir, 'energy_source.html'), (err, template) => {
+        // modify `template` and send response
+        // this will require a query to the SQL database
+        let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Info.name, Plant_Info.short_fuel \
+            FROM Country INNER JOIN Plant_Info ON Country.abbrv = Plant_Info.country WHERE Country.abbrv = ?';
+        let cid = req.params.cid.toUpperCase();
+        db.all(query, [cid], (err, rows) => {
+            console.log(err);
+            console.log(rows);
+            if (err) {
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.write('Error, file not found');
+                res.end();
+            }
+            else {
+                let response = template.toString();
+                response = response.replace('%%COMPANY%%', rows[0].cid);
+                //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
+                //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
+
+                let energy_table = '';
+                let i;
+                for(i=0; i < rows.length; i++){
+                    energy_table = energy_table + '<tr><td>' + rows[i].cid + '</td>';
+                    energy_table = energy_table + '<td>' + rows[i].country_name + '</td>';
+                    energy_table = energy_table + '<td>' + rows[i].name + '</td>';
+                    energy_table = energy_table + '<td>' + rows[i].short_fuel + '</td>';
+                }
+                response = response.replace('%%PLANT_INFO%%', energy_table);
+                res.status(200).type('html').send(response);
+            }
+        })
+
+    });
+});
+
+app.get('/capacity.html/:cid', (req, res) => {
+    console.log(req.params.cid);
+    fs.readFile(path.join(template_dir, 'capacity.html'), (err, template) => {
+        // modify `template` and send response
+        // this will require a query to the SQL database
+        let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Info.name, Plant_Info.capacity_mw \
+            FROM Country INNER JOIN Plant_Info ON Country.abbrv = Plant_Info.country WHERE Country.abbrv = ?';
+        let cid = req.params.cid.toUpperCase();
+        db.all(query, [cid], (err, rows) => {
+            console.log(err);
+            console.log(rows);
+            if (err) {
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.write('Error, file not found');
+                res.end();
+            }
+            else {
+                let response = template.toString();
+                response = response.replace('%%COMPANY%%', rows[0].cid);
+                //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
+                //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
+
+                let capacity_table = '';
+                let i;
+                for(i=0; i < rows.length; i++){
+                    capacity_table = capacity_table + '<tr><td>' + rows[i].cid + '</td>';
+                    capacity_table = capacity_table + '<td>' + rows[i].country_name + '</td>';
+                    capacity_table = capacity_table + '<td>' + rows[i].name + '</td>';
+                    capacity_table = capacity_table + '<td>' + rows[i].capacity_mw + '</td>';
+                }
+                response = response.replace('%%PLANT_INFO%%', capacity_table);
                 res.status(200).type('html').send(response);
             }
         })
