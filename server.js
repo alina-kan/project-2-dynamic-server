@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
     res.redirect(home);
 });
 
-app.get('/home.html/index.html', (req, res) => {
+app.get('/index.html/index.html', (req, res) => {
     let home = '/index.html'; // <-- change this
     res.redirect(home);
 });
