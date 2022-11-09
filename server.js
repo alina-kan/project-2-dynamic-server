@@ -29,11 +29,31 @@ app.use(express.static(public_dir));
 
 
 // GET request handler for home page '/' (redirect to desired route)
-/*
+
 app.get('/', (req, res) => {
-    let home = 'index.html'; // <-- change this
+    let home = '/index.html'; // <-- change this
     res.redirect(home);
-}); */
+});
+
+app.get('/home.html/index.html', (req, res) => {
+    let home = '/index.html'; // <-- change this
+    res.redirect(home);
+});
+
+app.get('/location.html/index.html', (req, res) => {
+    let home = '/index.html'; // <-- change this
+    res.redirect(home);
+});
+
+app.get('/capacity.html/index.html', (req, res) => {
+    let home = '/index.html'; // <-- change this
+    res.redirect(home);
+});
+
+app.get('/energy_source.html/index.html', (req, res) => {
+    let home = '/index.html'; // <-- change this
+    res.redirect(home);
+});
 
 /*
 // Example GET request handler for data about a specific year
