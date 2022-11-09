@@ -48,7 +48,7 @@ app.get('/year/:selected_year', (req, res) => {
 });
 */
 
-app.get('templates/location.html/:cid', (req, res) => {
+app.get('/location.html/:cid', (req, res) => {
     console.log(req.params.cid);
     fs.readFile(path.join(template_dir, 'location.html'), (err, template) => {
         // modify `template` and send response
