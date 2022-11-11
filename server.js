@@ -159,13 +159,29 @@ app.get('/energy_source.html/:fid', (req, res) => {
     });
 });
 
-app.get('/capacity.html/low', (req, res) => {
+app.get('/capacity.html/:amount', (req, res) => {
+
     fs.readFile(path.join(template_dir, 'capacity.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
+        let max = 0;
+        if (req.params.amount == 'low') {
+            max = 300;
+        }
+        else if (req.params.amount == 'med') {
+            max = 700;
+        }
+        else if (req.params.amount == 'high') {
+            max = 1000;
+        }
+        else {
+            res.writeHead(404, {'Content-Type': 'text/plain'});
+            res.write('Error, file not found. Please type low, med, or high as parameter.');
+            res.end();
+        }
         let query = 'SELECT Plant_Info.country, Plant_Info.name, Plant_Info.capacity_mw \
-            FROM Plant_Info WHERE Plant_Info.capacity_mw <=300';
-        db.all(query, (err, rows) => {
+            FROM Plant_Info WHERE Plant_Info.capacity_mw <= ?';
+        db.all(query, [max], (err, rows) => {
             console.log(err);
             console.log(rows);
             if (err) {
@@ -181,76 +197,6 @@ app.get('/capacity.html/low', (req, res) => {
             else {
                 let response = template.toString();
                 response = response.replace('%%COMPANY%%', 'Low');
-                //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
-                //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
-
-                let capacity_table = '';
-                let i;
-                for(i=0; i < rows.length; i++){
-                    capacity_table = capacity_table + '<tr><td>' + rows[i].country + '</td>';
-                    capacity_table = capacity_table + '<td>' + rows[i].name + '</td>';
-                    capacity_table = capacity_table + '<td>' + rows[i].capacity_mw + '</td></tr>';
-                }
-                response = response.replace('%%PLANT_INFO%%', capacity_table);
-                res.status(200).type('html').send(response);
-            }
-        })
-
-    });
-});
-
-app.get('/capacity.html/med', (req, res) => {
-    fs.readFile(path.join(template_dir, 'capacity.html'), (err, template) => {
-        // modify `template` and send response
-        // this will require a query to the SQL database
-        let query = 'SELECT Plant_Info.country, Plant_Info.name, Plant_Info.capacity_mw \
-            FROM Plant_Info WHERE Plant_Info.capacity_mw >=300 AND Plant_Info.capacity_mw <=700';
-        db.all(query, (err, rows) => {
-            console.log(err);
-            console.log(rows);
-            if (err) {
-                res.writeHead(404, {'Content-Type': 'text/plain'});
-                res.write('Error, file not found');
-                res.end();
-            }
-            else {
-                let response = template.toString();
-                response = response.replace('%%COMPANY%%', 'Medium');
-                //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
-                //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
-
-                let capacity_table = '';
-                let i;
-                for(i=0; i < rows.length; i++){
-                    capacity_table = capacity_table + '<tr><td>' + rows[i].country + '</td>';
-                    capacity_table = capacity_table + '<td>' + rows[i].name + '</td>';
-                    capacity_table = capacity_table + '<td>' + rows[i].capacity_mw + '</td></tr>';
-                }
-                response = response.replace('%%PLANT_INFO%%', capacity_table);
-                res.status(200).type('html').send(response);
-            }
-        })
-
-    });
-});
-
-app.get('/capacity.html/high', (req, res) => {
-    fs.readFile(path.join(template_dir, 'capacity.html'), (err, template) => {
-        // modify `template` and send response
-        // this will require a query to the SQL database
-        let query = 'SELECT Plant_Info.country, Plant_Info.name, Plant_Info.capacity_mw \
-            FROM Plant_Info WHERE Plant_Info.capacity_mw >=700';
-        db.all(query, (err, rows) => {
-            console.log(err);
-            console.log(rows);
-            if (err) {
-                res.writeHead(404, {'Content-Type': 'text/plain'});
-                res.write('Error, file not found');
-                res.end();
-            }
-            else {
-                let response = template.toString();
-                response = response.replace('%%COMPANY%%', 'High');
                 //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
                 //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
 
