@@ -112,15 +112,15 @@ app.get('/location.html/:cid', (req, res) => {
     });
 });
 
-app.get('/energy_source.html/:cid', (req, res) => {
-    console.log(req.params.cid);
+app.get('/energy_source.html/:fid', (req, res) => {
+    console.log(req.params.fid);
     fs.readFile(path.join(template_dir, 'energy_source.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
-        let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Info.name, Plant_Info.short_fuel \
-            FROM Country INNER JOIN Plant_Info ON Country.abbrv = Plant_Info.country WHERE Country.abbrv = ?';
-        let cid = req.params.cid.toUpperCase();
-        db.all(query, [cid], (err, rows) => {
+        let query = 'SELECT Plant_Info.short_fuel AS fid, Plant_Info.country, Plant_Info.name, Fuel.fuel_name \
+            FROM Plant_Info INNER JOIN Fuel ON Plant_Info.short_fuel = Fuel.fuel_id WHERE Plant_Info.short_fuel = ?';
+        let fid = req.params.fid.toUpperCase();
+        db.all(query, [fid], (err, rows) => {
             console.log(err);
             console.log(rows);
             if (err) {
@@ -130,14 +130,13 @@ app.get('/energy_source.html/:cid', (req, res) => {
             }
             else {
                 let response = template.toString();
-                response = response.replace('%%COMPANY%%', rows[0].cid);
+                response = response.replace('%%COMPANY%%', rows[0].fid);
                 //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
                 //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
 
                 let energy_table = '';
                 let i;
                 for(i=0; i < rows.length; i++){
-                    energy_table = energy_table + '<tr><td>' + rows[i].cid + '</td>';
                     energy_table = energy_table + '<td>' + rows[i].country_name + '</td>';
                     energy_table = energy_table + '<td>' + rows[i].name + '</td>';
                     energy_table = energy_table + '<td>' + rows[i].short_fuel + '</td>';
