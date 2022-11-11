@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 app.get('/location.html/main', (req, res) => {
     let page = '/location.html';
     res.redirect(page);
-})
+});
 
 app.get('/index.html/index.html', (req, res) => {
     let home = '/index.html'; // <-- change this
@@ -96,7 +96,7 @@ app.get('/location.html/:cid', (req, res) => {
             }
             else {
                 let response = template.toString();
-                response = response.replace('%%COMPANY%%', rows[0].cid);
+                response = response.replace('%%LOCATION%%', rows[0].cid);
                 //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
                 //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
 
@@ -214,6 +214,10 @@ app.get('/capacity.html/:amount', (req, res) => {
 
     });
 });
+
+let query = 'g';
+console.log(query)
+
 
 app.listen(port, () => {
     console.log('Now listening on port ' + port);
