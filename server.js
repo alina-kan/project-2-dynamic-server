@@ -89,6 +89,11 @@ app.get('/location.html/:cid', (req, res) => {
                 res.write('Error, file not found');
                 res.end();
             }
+            else if (rows.length == 0) {
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.write('Error, data not found for country ' + cid.toUpperCase());
+                res.end();
+            }
             else {
                 let response = template.toString();
                 response = response.replace('%%COMPANY%%', rows[0].cid);
@@ -166,6 +171,11 @@ app.get('/capacity.html/low', (req, res) => {
             if (err) {
                 res.writeHead(404, {'Content-Type': 'text/plain'});
                 res.write('Error, file not found');
+                res.end();
+            }
+            else if (rows.length == 0) {
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.write('Error, data not found for country ' + cid.toUpperCase());
                 res.end();
             }
             else {
