@@ -17,7 +17,8 @@ html {
   -webkit-text-size-adjust: 100%; }
 
 body {
-  margin: 0; }
+  margin: 0;
+}
 
 h1 {
   font-size: 3rem;
@@ -176,8 +177,8 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background: #fefefe;
-  font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+  background: #fff4de;
+  font-family: "Playfair Display", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
   font-weight: normal;
   line-height: 1.5;
   color: #0a0a0a;
@@ -552,8 +553,10 @@ td {
 
 p {
   margin-bottom: 1rem;
-  font-size: inherit;
+  font-size: 1.2rem;
+  font-family: 'Times New Roman', Times, serif; font-weight: bold;;
   line-height: 1.6;
+  color: #80673b;
   text-rendering: optimizeLegibility; }
 
 em,
@@ -576,10 +579,10 @@ h3, .h3,
 h4, .h4,
 h5, .h5,
 h6, .h6 {
-  font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+  font-family: "Didot", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
   font-style: normal;
-  font-weight: normal;
-  color: inherit;
+  font-weight: bold;
+  color: #5a5034;
   text-rendering: optimizeLegibility; }
   h1 small, .h1 small,
   h2 small, .h2 small,
@@ -641,12 +644,14 @@ h6, .h6 {
     font-size: 1rem; } }
 
 a {
-  line-height: inherit;
-  color: #1779ba;
+  line-height: 2rem;
+  color: #464232;
   text-decoration: none;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
   cursor: pointer; }
   a:hover, a:focus {
-    color: #1468a0; }
+    color: #e2b553; }
   a img {
     border: 0; }
 
@@ -668,6 +673,9 @@ dl {
   line-height: 1.6; }
 
 li {
+  color: #5a5034;
+  font-family: 'Times New Roman', Times, serif; 
+  font-weight: bold;
   font-size: inherit; }
 
 ul {

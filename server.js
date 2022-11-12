@@ -79,7 +79,8 @@ app.get('/location.html/:cid', (req, res) => {
         // modify `template` and send response
         // this will require a query to the SQL database
         let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Info.name, Plant_Info.latitude, \
-         Plant_Info.longitude FROM Country INNER JOIN Plant_Info ON Country.abbrv = Plant_Info.country WHERE Country.abbrv = ?';
+         Plant_Info.longitude, Plant_Info.capacity_mw, Plant_Info.short_fuel FROM Country INNER JOIN Plant_Info \
+         ON Country.abbrv = Plant_Info.country WHERE Country.abbrv = ?';
         let cid = req.params.cid.toUpperCase();
         db.all(query, [cid], (err, rows) => {
             console.log(err);
@@ -103,11 +104,14 @@ app.get('/location.html/:cid', (req, res) => {
                 let location_table = '';
                 let i;
                 for(i=0; i < rows.length; i++){
-                    location_table = location_table + '<tr><td>' + rows[i].cid + '</td>';
-                    location_table = location_table + '<td>' + rows[i].country_name + '</td>';
+                    location_table = location_table + '<tr><td>' + rows[i].country_name + '</td>';
+                    //location_table = location_table + '<td>' + rows[i].country_name + '</td>';
                     location_table = location_table + '<td>' + rows[i].name + '</td>';
                     location_table = location_table + '<td>' + rows[i].latitude + '</td>';
-                    location_table = location_table + '<td>' + rows[i].longitude + '</td></tr>';
+                    location_table = location_table + '<td>' + rows[i].longitude + '</td>';
+                    location_table = location_table + '<td>' + rows[i].short_fuel + '</td>';
+                    location_table = location_table + '<td>'+ rows[i].capacity_mw + '</td></tr>';
+                    
                 }
                 response = response.replace('%%PLANT_INFO%%', location_table);
                 res.status(200).type('html').send(response);
@@ -122,7 +126,7 @@ app.get('/energy_source.html/:fid', (req, res) => {
     fs.readFile(path.join(template_dir, 'energy_source.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
-        let query = 'SELECT Plant_Info.short_fuel AS fid, Plant_Info.country, Plant_Info.name, Fuel.fuel_name \
+        let query = 'SELECT Plant_Info.short_fuel AS fid, Plant_Info.country, Plant_Info.name, Fuel.fuel_name, Plant_Info.capacity_mw \
             FROM Plant_Info INNER JOIN Fuel ON Plant_Info.short_fuel = Fuel.fuel_id WHERE Plant_Info.short_fuel = ?';
         let fid = req.params.fid;
         db.all(query, [fid], (err, rows) => {
@@ -149,7 +153,8 @@ app.get('/energy_source.html/:fid', (req, res) => {
                 for(i=0; i < rows.length; i++){
                     energy_table = energy_table + '<tr><td>' + rows[i].country + '</td>';
                     energy_table = energy_table + '<td>' + rows[i].name + '</td>';
-                    energy_table = energy_table + '<td>' + rows[i].fuel_name + '</td></tr>';
+                    energy_table = energy_table + '<td>' + rows[i].fuel_name + '</td>';
+                    energy_table = energy_table + '<td>' + rows[i].capacity_mw + '</td></tr>';
                 }
                 response = response.replace('%%PLANT_INFO%%', energy_table);
                 res.status(200).type('html').send(response);
@@ -179,7 +184,7 @@ app.get('/capacity.html/:amount', (req, res) => {
             res.write('Error, file not found. Please type low, med, or high as parameter.');
             res.end();
         }
-        let query = 'SELECT Plant_Info.country, Plant_Info.name, Plant_Info.capacity_mw \
+        let query = 'SELECT Plant_Info.country, Plant_Info.name, Plant_Info.capacity_mw, Plant_Info.short_fuel \
             FROM Plant_Info WHERE Plant_Info.capacity_mw <= ?';
         db.all(query, [max], (err, rows) => {
             console.log(err);
@@ -205,7 +210,8 @@ app.get('/capacity.html/:amount', (req, res) => {
                 for(i=0; i < rows.length; i++){
                     capacity_table = capacity_table + '<tr><td>' + rows[i].country + '</td>';
                     capacity_table = capacity_table + '<td>' + rows[i].name + '</td>';
-                    capacity_table = capacity_table + '<td>' + rows[i].capacity_mw + '</td></tr>';
+                    capacity_table = capacity_table + '<td>' + rows[i].capacity_mw + '</td>';
+                    capacity_table = capacity_table + '<td>' + rows[i].short_fuel + '</td></tr>';
                 }
                 response = response.replace('%%PLANT_INFO%%', capacity_table);
                 res.status(200).type('html').send(response);
