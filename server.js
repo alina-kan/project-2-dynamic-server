@@ -134,8 +134,6 @@ app.get('/location.html/:cid', (req, res) => {
         let query1 = 'SELECT Country.abbrv FROM Country';
         db.all(query1, [], (err, rows) =>{
             console.log(rows);
-            //console.log("!!!CIS IS: " + cid);
-            let c_id = cid.toLowerCase();
             let i = 0;
 
             while(!(cid == rows[i].abbrv) && i < rows.length){
@@ -227,12 +225,12 @@ app.get('/energy_source.html/:fid', (req, res) => {
         db.all(query2, [], (err, rows) =>{
             console.log(rows);
             let i = 0;
-            console.log("fuel id at 0: "+rows[i].fuel_id);
-            console.log("Fuel Types: " + rows.fuel_id);
-
+            //console.log("fuel id at 0: " + rows[i].fuel_id);
+            //console.log("fuel id at length(): " + rows[rows.length-1].fuel_id);
             while(!(fid == rows[i].fuel_id) && i < rows.length){
                 i++;
             }
+            console.log("fuel id at i: " + rows[i].fuel_id);
             if(i == 0){
                 prevIdx = rows.length - 1;
                 nextIdx = 1;
