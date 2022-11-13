@@ -78,6 +78,12 @@ app.get('/location.html/:cid', (req, res) => {
     fs.readFile(path.join(template_dir, 'location.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
+
+        var done = false;
+        let prevIdx;
+        let nextIdx;
+        let response = template.toString();
+
         let query = 'SELECT Country.abbrv AS cid, Country.country_name, Plant_Info.name, Plant_Info.latitude, \
          Plant_Info.longitude, Plant_Info.capacity_mw, Plant_Info.short_fuel FROM Country INNER JOIN Plant_Info \
          ON Country.abbrv = Plant_Info.country WHERE Country.abbrv = ?';
@@ -96,7 +102,7 @@ app.get('/location.html/:cid', (req, res) => {
                 res.end();
             }
             else {
-                let response = template.toString();
+                
                 response = response.replace('%%LOCATION%%', rows[0].cid);
                 //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
                 //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
@@ -113,10 +119,53 @@ app.get('/location.html/:cid', (req, res) => {
                     location_table = location_table + '<td>'+ rows[i].capacity_mw + '</td></tr>';
                     
                 }
+                
                 response = response.replace('%%PLANT_INFO%%', location_table);
-                res.status(200).type('html').send(response);
+                if(done){
+                    response = response.replace('%%PREVIOUSLINK%%', rows[prevIdx].abbrv);
+                    response = response.replace('%%NEXTLINK%%', rows[nextIdx].abbrv);
+                    res.status(200).type('html').send(response);
+                }
+                done = true;
             }
         })
+
+
+        let query1 = 'SELECT Country.abbrv FROM Country';
+        db.all(query1, [], (err, rows) =>{
+            console.log(rows);
+            //console.log("!!!CIS IS: " + cid);
+            let c_id = cid.toLowerCase();
+            let i = 0;
+            console.log("abbriv: "+rows[i].abbrv);
+
+            while(!(cid == rows[i].abbrv) && i < rows.length){
+                i++;
+                //console.log("row at i is: " + rows[i].abbrv + " and cid is: "+ cid);
+            }
+            if(i == 0){
+                prevIdx = rows.length - 1;
+                nextIdx = 1;
+            }
+            else if(i == rows.length - 1){
+                prevIdx = i-1
+                nextIdx = 0;
+            }
+            else{
+                prevIdx = i-1;
+                nextIdx = i+1;
+            }
+            
+            if(done){
+                response = response.replace('%%PREVIOUSLINK%%', rows[prevIdx].abbrv);
+                response = response.replace('%%NEXTLINK%%', rows[nextIdx].abbrv);
+                res.status(200).type('html').send(response);
+            }
+            done = true;
+
+
+        });
+
 
     });
 });
@@ -214,6 +263,28 @@ app.get('/capacity.html/:amount', (req, res) => {
                     capacity_table = capacity_table + '<td>' + rows[i].short_fuel + '</td></tr>';
                 }
                 response = response.replace('%%PLANT_INFO%%', capacity_table);
+                if(req.params.amount == 'low'){
+                    response = response.replace('%%PREVIOUSLINK%%', 'med');
+                    response = response.replace('%%NEXTLINK%%', 'high');
+
+                    response = response.replace('%%PREVIOUS%%', 'Medium');
+                    response = response.replace('%%NEXT%%', 'High');
+                }
+                else if(req.params.amount == 'med'){
+                    response = response.replace('%%PREVIOUSLINK%%', 'low');
+                    response = response.replace('%%NEXTLINK%%', 'high');
+                    
+                    response = response.replace('%%PREVIOUS%%', 'Low');
+                    response = response.replace('%%NEXT%%', 'High');
+                }
+                else{
+                    response = response.replace('%%PREVIOUSLINK%%', 'low');
+                    response = response.replace('%%NEXTLINK%%', 'med');
+
+                    response = response.replace('%%PREVIOUS%%', 'Low');
+                    response = response.replace('%%NEXT%%', 'Medium');
+                }
+
                 res.status(200).type('html').send(response);
             }
         })
@@ -221,8 +292,7 @@ app.get('/capacity.html/:amount', (req, res) => {
     });
 });
 
-let query = 'g';
-console.log(query)
+
 
 
 app.listen(port, () => {
