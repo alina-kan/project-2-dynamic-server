@@ -159,8 +159,6 @@ app.get('/location.html/:cid', (req, res) => {
                 res.status(200).type('html').send(response);
             }
             done = true;
-
-
         });
 
 
