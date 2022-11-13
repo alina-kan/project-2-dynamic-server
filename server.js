@@ -137,7 +137,6 @@ app.get('/location.html/:cid', (req, res) => {
             //console.log("!!!CIS IS: " + cid);
             let c_id = cid.toLowerCase();
             let i = 0;
-            console.log("abbriv: "+rows[i].abbrv);
 
             while(!(cid == rows[i].abbrv) && i < rows.length){
                 i++;
@@ -175,6 +174,12 @@ app.get('/energy_source.html/:fid', (req, res) => {
     fs.readFile(path.join(template_dir, 'energy_source.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
+        
+        var done = false;
+        let prevIdx;
+        let nextIdx;
+        let response = template.toString();
+
         let query = 'SELECT Plant_Info.short_fuel AS fid, Plant_Info.country, Plant_Info.name, Fuel.fuel_name, Plant_Info.capacity_mw \
             FROM Plant_Info INNER JOIN Fuel ON Plant_Info.short_fuel = Fuel.fuel_id WHERE Plant_Info.short_fuel = ?';
         let fid = req.params.fid;
@@ -192,7 +197,7 @@ app.get('/energy_source.html/:fid', (req, res) => {
                 res.end();
             }
             else {
-                let response = template.toString();
+                
                 response = response.replace('%%COMPANY%%', rows[0].fuel_name);
                 response = response.replace('%%MFR_IMAGE%%', '/images/' + fid + '.png');
                 response = response.replace('%%MFR_ALT_TEXT%%', 'Chart of Energy Sources');
@@ -205,10 +210,52 @@ app.get('/energy_source.html/:fid', (req, res) => {
                     energy_table = energy_table + '<td>' + rows[i].fuel_name + '</td>';
                     energy_table = energy_table + '<td>' + rows[i].capacity_mw + '</td></tr>';
                 }
+
                 response = response.replace('%%PLANT_INFO%%', energy_table);
-                res.status(200).type('html').send(response);
+                if(done){
+                    response = response.replace('%%PREVIOUSLINK%%', rows[prevIdx].fuel_id);
+                    response = response.replace('%%NEXTLINK%%', rows[nextIdx].fuel_id);
+                    res.status(200).type('html').send(response);
+                }
+                done = true;
+
             }
         })
+
+
+        let query2 = 'SELECT fuel_id FROM Fuel';
+        db.all(query2, [], (err, rows) =>{
+            console.log(rows);
+            let i = 0;
+            console.log("fuel id at 0: "+rows[i].fuel_id);
+            console.log("Fuel Types: " + rows.fuel_id);
+
+            while(!(fid == rows[i].fuel_id) && i < rows.length){
+                i++;
+            }
+            if(i == 0){
+                prevIdx = rows.length - 1;
+                nextIdx = 1;
+            }
+            else if(i == rows.length - 1){
+                prevIdx = i-1
+                nextIdx = 0;
+            }
+            else{
+                prevIdx = i-1;
+                nextIdx = i+1;
+            }
+            
+            if(done){
+                response = response.replace('%%PREVIOUSLINK%%', rows[prevIdx].fuel_id);
+                response = response.replace('%%NEXTLINK%%', rows[nextIdx].fuel_id);
+                res.status(200).type('html').send(response);
+            }
+            done = true;
+
+
+        });
+
 
     });
 });
@@ -250,7 +297,16 @@ app.get('/capacity.html/:amount', (req, res) => {
             }
             else {
                 let response = template.toString();
-                response = response.replace('%%COMPANY%%', 'Low');
+                //response = response.replace('%%COMPANY%%', req.params.amount);
+                if (req.params.amount == 'low') {
+                    response = response.replace('%%COMPANY%%', "Low Capacity");
+                }
+                else if (req.params.amount == 'med') {
+                    response = response.replace('%%COMPANY%%', "Medium Capacity");
+                }
+                else {
+                    response = response.replace('%%COMPANY%%', "High Capacity");
+                }
                 //response = response.replace('%%MFR_IMAGE%%', '/images/' + mfr + '_logo.png');
                 //response = response.replace('%%MFR_ALT_TEXT%%', 'Logo of ' + rows[0].mfr);
 
