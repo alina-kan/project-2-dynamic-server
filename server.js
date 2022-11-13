@@ -161,7 +161,6 @@ app.get('/location.html/:cid', (req, res) => {
             done = true;
         });
 
-
     });
 });
 
