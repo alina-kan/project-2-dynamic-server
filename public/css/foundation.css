@@ -579,7 +579,7 @@ h3, .h3,
 h4, .h4,
 h5, .h5,
 h6, .h6 {
-  font-family: "Didot", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+  font-family: "Didot", "Helvetica Neue", "Times New Roman" Helvetica, Roboto, Arial, sans-serif;
   font-style: normal;
   font-weight: bold;
   color: #5a5034;
